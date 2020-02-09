@@ -1,22 +1,28 @@
-import { createReducer } from '@reduxjs/toolkit'
+import { createReducer, Reducer } from 'typesafe-actions'
 
+import { Repository } from '../../models/Repository'
 import {
-  FetchRepositoriesFailed,
+  RepositoryActionTypes,
+  fetchRepositoriesActions,
+  FetchRepositoriesSuccess,
+  FetchRepositoriesFailure,
   UpdateUsername,
+  updateUsername,
   FetchingRepositories,
-} from './../actions/repositoriesActionsTypes'
-import { Repository } from '../../models/Reposotory'
-import { FetchRepositoriesSuccess } from '../actions/repositoriesActionsTypes'
+  fetchRepositoriesLoading,
+} from '../actions/repositoriesActions'
 
 interface RepositoriesState {
   repositories?: Repository[]
-  loadingRepositories: boolean
+  loadingRepositories?: boolean
   error?: Error
   username?: string
 }
 
-type ReducerFunction<S, A> = (state: S, action: A) => S
-type RepositoriesReducer<A> = ReducerFunction<RepositoriesState, A>
+type RepositoriesReducer<A extends RepositoryActionTypes> = Reducer<
+  RepositoriesState,
+  A
+>
 
 const initialState: RepositoriesState = {
   username: '',
@@ -34,7 +40,7 @@ const fetchRepositoriesSuccess: RepositoriesReducer<FetchRepositoriesSuccess> = 
   loadingRepositories: false,
 })
 
-const fetchRepositoriesFailed: RepositoriesReducer<FetchRepositoriesFailed> = (
+const fetchRepositoriesFailure: RepositoriesReducer<FetchRepositoriesFailure> = (
   state,
   action,
 ) => ({
@@ -43,7 +49,7 @@ const fetchRepositoriesFailed: RepositoriesReducer<FetchRepositoriesFailed> = (
   loadingRepositories: false,
 })
 
-const updateUsername: RepositoriesReducer<UpdateUsername> = (
+const updateUsernameReducer: RepositoriesReducer<UpdateUsername> = (
   state,
   action,
 ) => ({
@@ -59,12 +65,11 @@ const fetchingRepositories: RepositoriesReducer<FetchingRepositories> = (
   loadingRepositories: true,
 })
 
-export const repositoriesReducer = createReducer<RepositoriesState>(
-  initialState,
-  {
-    FETCH_REPOSITORIES_SUCCESS: fetchRepositoriesSuccess,
-    FETCH_REPOSITORIES_FAILED: fetchRepositoriesFailed,
-    UPDATE_USERNAME: updateUsername,
-    FETCHING_REPOSITORIES: fetchingRepositories,
-  },
-)
+export const repositoriesReducer = createReducer<
+  RepositoriesState,
+  RepositoryActionTypes
+>(initialState)
+  .handleAction(fetchRepositoriesActions.success, fetchRepositoriesSuccess)
+  .handleAction(fetchRepositoriesActions.failure, fetchRepositoriesFailure)
+  .handleAction(updateUsername, updateUsernameReducer)
+  .handleAction(fetchRepositoriesLoading, fetchingRepositories)

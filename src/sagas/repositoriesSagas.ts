@@ -1,23 +1,29 @@
-import { FETCH_REPOSITORIES } from './../store/actions/repositoriesActionsTypes'
-import {
-  fetchRepositoriesSuccess,
-  fetchRepositoriesFailed,
-} from './../store/actions/repositoriesActions'
-import { getUsername } from './../selectors/repositorySelectors'
+import { fetchRepositoriesLoading } from './../store/actions/repositoriesActions'
 import { Saga } from 'redux-saga'
 import { call, getContext, select, put, takeLatest } from 'redux-saga/effects'
 
-const handleFetchRepositoriesSaga = function*(action) {
+import { Repository } from './../models/Repository'
+import { fetchRepositoriesActions } from './../store/actions'
+import { getUsername } from './../selectors/repositorySelectors'
+
+const handleFetchRepositoriesSaga = function*() {
   try {
-    const username = yield select(getUsername)
+    yield put(fetchRepositoriesLoading())
+    const username: string = yield select(getUsername)
     const GithubApi = yield getContext('GithubApi')
-    const repositories = yield call(GithubApi.getRepositories, username)
-    yield put(fetchRepositoriesSuccess(repositories))
+    const repositories: Repository[] = yield call(
+      GithubApi.getRepositories,
+      username,
+    )
+    yield put(fetchRepositoriesActions.success(repositories))
   } catch (error) {
-    yield put(fetchRepositoriesFailed(error))
+    yield put(fetchRepositoriesActions.failure(error))
   }
 }
 
 export const watchFetchRepositoriesSaga: Saga<any> = function*() {
-  yield takeLatest(FETCH_REPOSITORIES, handleFetchRepositoriesSaga)
+  yield takeLatest(
+    fetchRepositoriesActions.request,
+    handleFetchRepositoriesSaga,
+  )
 }

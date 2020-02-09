@@ -13,12 +13,12 @@ import { Provider, connect } from 'react-redux'
 import { SafeAreaView, StatusBar, Button } from 'react-native'
 
 import { store } from './src/store'
-import { fetchRepositoriesThunk } from './src/thunks/repositoriesThunks'
 
 import RepositoryListContainer from './src/containers/RepositoryList/RepositoryListContainer'
 import RepositorySearchContainer from './src/containers/RepositorySearch/RepositorySearchContainer'
 import { Loading } from './src/components/Loading/Loading'
-import { FETCH_REPOSITORIES } from './src/store/actions/repositoriesActionsTypes'
+import { fetchRepositoriesActions } from './src/store/actions'
+import { fetchRepositoriesThunk } from './src/thunks/repositoriesThunks'
 
 // store.dispatch(fetchRepositoriesThunk('pernett98'));
 
@@ -36,7 +36,12 @@ const App = () => {
           <RepositorySearchContainer />
           <Button
             title="find"
-            onPress={() => store.dispatch({ type: FETCH_REPOSITORIES })}
+            onPress={() =>
+              store.dispatch(
+                fetchRepositoriesActions.request(),
+                // fetchRepositoriesThunk()
+              )
+            }
           />
           <LoadingContainer />
           <RepositoryListContainer />

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Repository } from '../../models/Reposotory'
+import { Repository } from '../../models/Repository'
 import { FlatList, Text } from 'react-native'
 
 interface RepositoryList {

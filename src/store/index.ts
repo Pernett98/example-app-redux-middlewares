@@ -1,10 +1,13 @@
 import { createStore, applyMiddleware, compose } from 'redux'
 import thunk from 'redux-thunk'
-import rootReducer from './reducers/rootReducer'
 import createSagaMiddleware from 'redux-saga'
+import { StateType } from 'typesafe-actions'
+
+import rootReducer from './reducers/rootReducer'
 
 import { getRepositories } from '../services/githubServices'
 import { configureEpicMiddleware } from '../epics'
+import rootSaga from '../sagas'
 
 // @ts-ignore
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
@@ -12,7 +15,7 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 const apis = { GithubApi: { getRepositories } }
 
 export type Apis = typeof apis
-export type RootState = ReturnType<typeof rootReducer>
+export type RootState = StateType<typeof rootReducer>
 
 const { epicMiddleware, runEpicMiddleware } = configureEpicMiddleware(apis)
 
@@ -24,8 +27,12 @@ export const store = createStore(
   rootReducer,
   {},
   composeEnhancers(
-    applyMiddleware(thunk.withExtraArgument(apis), epicMiddleware),
+    applyMiddleware(
+      // thunk.withExtraArgument(apis),
+      // epicMiddleware,
+      sagaMiddleware,
+    ),
   ),
 )
-
-runEpicMiddleware()
+sagaMiddleware.run(rootSaga)
+// runEpicMiddleware()

@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { map } from 'lodash'
-import { Repository } from './../models/Reposotory'
+import { Repository } from '../models/Repository'
 import { fakeDelay } from './fakeTimer'
 
 const githubClient = axios.create({

@@ -1,41 +1,41 @@
-import {
-  FETCH_REPOSITORIES,
-  FETCH_REPOSITORY,
-  RepositoryActionTypes,
-  FETCH_REPOSITORIES_SUCCESS,
-  FETCH_REPOSITORIES_FAILED,
-  UPDATE_USERNAME,
-  FETCHING_REPOSITORIES,
-} from './repositoriesActionsTypes'
-import { Repository } from '../../models/Reposotory'
+import { createAction, createAsyncAction, ActionType } from 'typesafe-actions'
 
-type RepositoriesAction<T = any> = (payload?: T) => RepositoryActionTypes
+import { Repository } from '../../models/Repository'
 
-export const fetchRepositories: RepositoriesAction<string> = username => ({
-  type: FETCH_REPOSITORIES,
-  payload: username,
-})
+export const fetchRepositoriesActions = createAsyncAction(
+  'FETCH_REPOSITORIES_REQUEST',
+  'FETCH_REPOSITORIES_SUCCESS',
+  'FETCH_REPOSITORIES_FAILURE',
+  'FETCH_REPOSITORIES_CANCEL',
+)<undefined, Repository[], Error>()
 
-export const fetchingRepositories: RepositoriesAction = () => ({
-  type: FETCHING_REPOSITORIES,
-})
+export const fetchRepositoriesLoading = createAction(
+  'FETCH_REPOSITORIES_LOADING',
+)()
 
-export const fetchRepositoriesSuccess: RepositoriesAction<Repository[]> = repositories => ({
-  type: FETCH_REPOSITORIES_SUCCESS,
-  payload: repositories,
-})
+export const updateUsername = createAction('UPDATE_USERNAME')<string>()
 
-export const fetchRepositoriesFailed: RepositoriesAction<Error> = error => ({
-  type: FETCH_REPOSITORIES_FAILED,
-  payload: error,
-})
+export type FetchRepositoriesRequest = ActionType<
+  typeof fetchRepositoriesActions.request
+>
 
-export const fetchRepository: RepositoriesAction<string> = repositoryId => ({
-  type: FETCH_REPOSITORY,
-  payload: repositoryId,
-})
+export type FetchRepositoriesSuccess = ActionType<
+  typeof fetchRepositoriesActions.success
+>
 
-export const updateUsername: RepositoriesAction<string> = username => ({
-  type: UPDATE_USERNAME,
-  payload: username,
-})
+export type FetchRepositoriesFailure = ActionType<
+  typeof fetchRepositoriesActions.failure
+>
+
+export type FetchRepositoriesCancel = ActionType<
+  typeof fetchRepositoriesActions.cancel
+>
+
+export type UpdateUsername = ActionType<typeof updateUsername>
+
+export type FetchingRepositories = ActionType<typeof fetchRepositoriesLoading>
+
+export type RepositoryActionTypes =
+  | ActionType<typeof fetchRepositoriesActions>
+  | FetchingRepositories
+  | UpdateUsername

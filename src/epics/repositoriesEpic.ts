@@ -1,19 +1,14 @@
-import { Epic, ofType } from 'redux-observable'
+import { Epic } from 'redux-observable'
 import { from, of, concat } from 'rxjs'
-import { map, switchMap, takeUntil, catchError } from 'rxjs/operators'
+import { map, switchMap, takeUntil, catchError, filter } from 'rxjs/operators'
 
-import {
-  RepositoryActionTypes,
-  FETCH_REPOSITORIES,
-} from '../store/actions/repositoriesActionsTypes'
 import { Apis, RootState } from '../store'
 import {
-  fetchingRepositories,
-  fetchRepositoriesSuccess,
-  fetchRepositoriesFailed,
-} from '../store/actions/repositoriesActions'
-
-const onRepositoriesError = (error: Error) => of(fetchRepositoriesFailed(error))
+  RepositoryActionTypes,
+  fetchRepositoriesActions,
+  fetchRepositoriesLoading,
+} from '../store/actions'
+import { isActionOf } from 'typesafe-actions'
 
 export const fetchRepositoriesEpic: Epic<
   RepositoryActionTypes,
@@ -21,16 +16,19 @@ export const fetchRepositoriesEpic: Epic<
   RootState,
   Apis
 > = (action$, state$, { GithubApi }) =>
-  action$.ofType(FETCH_REPOSITORIES).pipe(
+  action$.pipe(
+    filter(isActionOf(fetchRepositoriesActions.request)),
     switchMap(() =>
       concat(
-        of(fetchingRepositories()),
+        of(fetchRepositoriesLoading()),
         from(
           GithubApi.getRepositories(state$.value.repositories.username || ''),
         ).pipe(
-          map(repositories => fetchRepositoriesSuccess(repositories)),
-          catchError(onRepositoriesError),
-          takeUntil(action$.pipe(ofType(''))),
+          map(repositories => fetchRepositoriesActions.success(repositories)),
+          catchError(error => of(fetchRepositoriesActions.failure(error))),
+          takeUntil(
+            action$.pipe(filter(isActionOf(fetchRepositoriesActions.cancel))),
+          ),
         ),
       ),
     ),
