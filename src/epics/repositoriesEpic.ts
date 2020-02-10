@@ -1,29 +1,33 @@
 import { Epic } from 'redux-observable'
 import { from, of, concat } from 'rxjs'
 import { map, switchMap, takeUntil, catchError, filter } from 'rxjs/operators'
+import { isActionOf } from 'typesafe-actions'
 
 import { Apis, RootState } from '../store'
+import { getUsername } from './../selectors/repositorySelectors'
 import {
   RepositoryActionTypes,
   fetchRepositoriesActions,
   fetchRepositoriesLoading,
 } from '../store/actions'
-import { isActionOf } from 'typesafe-actions'
 
-export const fetchRepositoriesEpic: Epic<
+type FetchRepositoriesEpic = Epic<
   RepositoryActionTypes,
   RepositoryActionTypes,
   RootState,
   Apis
-> = (action$, state$, { GithubApi }) =>
+>
+export const fetchRepositoriesEpic: FetchRepositoriesEpic = (
+  action$,
+  state$,
+  { GithubApi },
+) =>
   action$.pipe(
     filter(isActionOf(fetchRepositoriesActions.request)),
     switchMap(() =>
       concat(
         of(fetchRepositoriesLoading()),
-        from(
-          GithubApi.getRepositories(state$.value.repositories.username || ''),
-        ).pipe(
+        from(GithubApi.getRepositories(getUsername(state$.value))).pipe(
           map(repositories => fetchRepositoriesActions.success(repositories)),
           catchError(error => of(fetchRepositoriesActions.failure(error))),
           takeUntil(

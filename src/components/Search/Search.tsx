@@ -1,16 +1,21 @@
 import React from 'react'
-import { TextInput } from 'react-native'
+import { TextInput, Text } from 'react-native'
+import Styles from './Styles'
 
 interface SearchProps {
+  title?: string
   text?: string
   placeHolder?: string
   onChangeText: (text: string) => void
 }
-
-export default (props: SearchProps) => (
-  <TextInput
-    value={props.text}
-    placeholder={props.placeHolder}
-    onChangeText={props.onChangeText}
-  />
+const Search: React.FC<SearchProps> = props => (
+  <>
+    <Text style={Styles.title}>{props.title}</Text>
+    <TextInput
+      value={props.text}
+      placeholder={props.placeHolder}
+      onChangeText={props.onChangeText}
+    />
+  </>
 )
+export default Search

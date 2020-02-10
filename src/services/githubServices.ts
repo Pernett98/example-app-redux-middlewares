@@ -21,3 +21,8 @@ const _getRepositories = (username: string) =>
 
 export const getRepositories: typeof _getRepositories = (username: string) =>
   fakeDelay(_getRepositories(username), 15000)
+
+const GithubApi = {
+  getRepositories,
+}
+export default GithubApi

@@ -9,12 +9,20 @@ import { fetchRepositoriesLoading } from './../store/actions/repositoriesActions
 import { getUsername } from './../selectors/repositorySelectors'
 import { Apis, RootState } from '../store'
 
-export const fetchRepositoriesThunk: ActionCreator<ThunkAction<
-  Promise<RepositoryActionTypes>,
-  RootState,
-  Apis,
-  RepositoryActionTypes
->> = () => (dispatch, getState, { GithubApi }) => {
+type FetchRepositoriesThunk = ActionCreator<
+  ThunkAction<
+    Promise<RepositoryActionTypes>,
+    RootState,
+    Apis,
+    RepositoryActionTypes
+  >
+>
+
+export const fetchRepositoriesThunk: FetchRepositoriesThunk = () => (
+  dispatch,
+  getState,
+  { GithubApi },
+) => {
   dispatch(fetchRepositoriesLoading())
   return GithubApi.getRepositories(getUsername(getState()))
     .then(repositories =>

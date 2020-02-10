@@ -9,40 +9,30 @@
  */
 
 import React from 'react'
-import { Provider, connect } from 'react-redux'
-import { SafeAreaView, StatusBar, Button } from 'react-native'
+import { Provider } from 'react-redux'
+import { SafeAreaView, StatusBar, Button, View } from 'react-native'
 
 import { store } from './src/store'
 
 import RepositoryListContainer from './src/containers/RepositoryList/RepositoryListContainer'
 import RepositorySearchContainer from './src/containers/RepositorySearch/RepositorySearchContainer'
-import { Loading } from './src/components/Loading/Loading'
 import { fetchRepositoriesActions } from './src/store/actions'
 import { fetchRepositoriesThunk } from './src/thunks/repositoriesThunks'
-
-// store.dispatch(fetchRepositoriesThunk('pernett98'));
+import { LoadingContainer } from './src/containers/LoadingContainer'
+import FetchRespositoriesContainer from './src/containers/FetchRespositoriesContainer'
 
 declare let global: { HermesInternal: null | {} }
 
-const LoadingContainer = connect(s => ({
-  loading: s.repositories.loadingRepositories,
-}))(Loading)
 const App = () => {
   return (
     <Provider store={store}>
       <>
         <StatusBar barStyle="dark-content" />
         <SafeAreaView>
-          <RepositorySearchContainer />
-          <Button
-            title="find"
-            onPress={() =>
-              store.dispatch(
-                fetchRepositoriesActions.request(),
-                // fetchRepositoriesThunk()
-              )
-            }
-          />
+          <View style={{ paddingHorizontal: 5 }}>
+            <RepositorySearchContainer title="Github username:" />
+            <FetchRespositoriesContainer />
+          </View>
           <LoadingContainer />
           <RepositoryListContainer />
         </SafeAreaView>

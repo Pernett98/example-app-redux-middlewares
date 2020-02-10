@@ -1,12 +1,12 @@
-import { fetchRepositoriesLoading } from './../store/actions/repositoriesActions'
 import { Saga } from 'redux-saga'
 import { call, getContext, select, put, takeLatest } from 'redux-saga/effects'
 
 import { Repository } from './../models/Repository'
 import { fetchRepositoriesActions } from './../store/actions'
 import { getUsername } from './../selectors/repositorySelectors'
+import { fetchRepositoriesLoading } from './../store/actions/repositoriesActions'
 
-const handleFetchRepositoriesSaga = function*() {
+export const handleFetchRepositoriesSaga = function*() {
   try {
     yield put(fetchRepositoriesLoading())
     const username: string = yield select(getUsername)
