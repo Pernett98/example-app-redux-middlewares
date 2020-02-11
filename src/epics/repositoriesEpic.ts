@@ -1,6 +1,13 @@
 import { Epic } from 'redux-observable'
-import { from, of, concat } from 'rxjs'
-import { map, switchMap, takeUntil, catchError, filter } from 'rxjs/operators'
+import { from, of } from 'rxjs'
+import {
+  map,
+  switchMap,
+  takeUntil,
+  catchError,
+  filter,
+  startWith,
+} from 'rxjs/operators'
 import { isActionOf } from 'typesafe-actions'
 
 import { Apis, RootState } from '../store'
@@ -25,15 +32,13 @@ export const fetchRepositoriesEpic: FetchRepositoriesEpic = (
   action$.pipe(
     filter(isActionOf(fetchRepositoriesActions.request)),
     switchMap(() =>
-      concat(
-        of(fetchRepositoriesLoading()),
-        from(GithubApi.getRepositories(getUsername(state$.value))).pipe(
-          map(repositories => fetchRepositoriesActions.success(repositories)),
-          catchError(error => of(fetchRepositoriesActions.failure(error))),
-          takeUntil(
-            action$.pipe(filter(isActionOf(fetchRepositoriesActions.cancel))),
-          ),
+      from(GithubApi.getRepositories(getUsername(state$.value))).pipe(
+        map(repositories => fetchRepositoriesActions.success(repositories)),
+        catchError(error => of(fetchRepositoriesActions.failure(error))),
+        takeUntil(
+          action$.pipe(filter(isActionOf(fetchRepositoriesActions.cancel))),
         ),
+        startWith(fetchRepositoriesLoading()),
       ),
     ),
   )

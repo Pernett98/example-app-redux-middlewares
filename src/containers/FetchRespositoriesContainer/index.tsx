@@ -21,7 +21,7 @@ const FetchRepositoriesContainer: React.FC<FetchRepositoriesContainerProps> = ({
     title="Find"
     onPress={() =>
       dispatch(
-        //TODO: change
+        //TODO: change the middleware to use it
         fetchRepositoriesActions.request(),
         // fetchRepositoriesThunk(),
       )

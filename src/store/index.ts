@@ -28,13 +28,13 @@ export const store = createStore(
   {},
   composeEnhancers(
     applyMiddleware(
-      //TODO: change
+      //TODO: change the middleware to use it
       // thunk.withExtraArgument(apis),
       epicMiddleware,
       // sagaMiddleware,
     ),
   ),
 )
-//TODO: change
+//TODO: change the middleware to use it
 // sagaMiddleware.run(rootSaga)
 runEpicMiddleware()
